@@ -1,0 +1,291 @@
+{
+ "tabelas": {
+  "dim_unidades": {
+   "comentario": "Unidades (matriz e filiais regionais) onde os colaboradores estão lotados.",
+   "colunas": {
+    "unidade_id": "Identificador da unidade (PK).",
+    "unidade": "Nome da unidade.",
+    "cidade": "Cidade.",
+    "uf": "Estado (sigla).",
+    "regiao": "Região do Brasil.",
+    "tipo_unidade": "Matriz ou Filial."
+   }
+  },
+  "dim_areas": {
+   "comentario": "Áreas/departamentos da empresa agrupados por diretoria, com centro de custo e gestor responsável.",
+   "colunas": {
+    "area_id": "Identificador da área (PK).",
+    "diretoria": "Diretoria à qual a área pertence.",
+    "area": "Nome da área/departamento.",
+    "centro_custo": "Código do centro de custo.",
+    "gestor_area_id": "colaborador_id do gestor máximo da área (FK colaboradores)."
+   }
+  },
+  "dim_cargos": {
+   "comentario": "Catálogo de cargos com família, nível hierárquico e faixa salarial (R$ mensais).",
+   "colunas": {
+    "cargo_id": "Identificador do cargo (PK).",
+    "cargo": "Nome do cargo.",
+    "familia_cargo": "Família de cargos.",
+    "nivel": "Nível hierárquico: Operacional, Analista, Especialista, Liderança ou Gestão.",
+    "faixa_salarial_min": "Salário mínimo da faixa (R$/mês).",
+    "faixa_salarial_max": "Salário máximo da faixa (R$/mês).",
+    "area_id": "Área dona do cargo (FK dim_areas)."
+   }
+  },
+  "dim_cursos": {
+   "comentario": "Catálogo de cursos da universidade corporativa.",
+   "colunas": {
+    "curso_id": "Identificador do curso (PK).",
+    "curso": "Nome do curso.",
+    "categoria": "Categoria (Compliance obrigatório, Técnico, Liderança, Dados e IA, etc.).",
+    "carga_horaria": "Carga horária em horas.",
+    "publico_alvo": "Público-alvo do curso."
+   }
+  },
+  "colaboradores": {
+   "comentario": "Cadastro de colaboradores (ativos e desligados) — uma linha por pessoa. Status 'Ativo' = headcount atual. Contém PII sintética (nome, CPF, e-mail).",
+   "colunas": {
+    "colaborador_id": "Matrícula do colaborador (PK).",
+    "nome": "Nome completo (PII).",
+    "email_corporativo": "E-mail corporativo (PII).",
+    "cpf": "CPF (PII sensível, sintético).",
+    "genero": "Gênero autodeclarado.",
+    "data_nascimento": "Data de nascimento.",
+    "raca_cor": "Raça/cor autodeclarada (padrão IBGE).",
+    "pcd": "Pessoa com deficiência.",
+    "escolaridade": "Maior escolaridade.",
+    "data_admissao": "Data de admissão.",
+    "data_desligamento": "Data de desligamento (nula se ativo).",
+    "area_id": "Área de lotação (FK dim_areas).",
+    "cargo_id": "Cargo atual (FK dim_cargos).",
+    "unidade_id": "Unidade de lotação (FK dim_unidades).",
+    "tipo_contrato": "CLT, Estágio ou Jovem Aprendiz.",
+    "modelo_trabalho": "Presencial, Híbrido ou Remoto.",
+    "salario_base": "Salário base mensal atual em R$ (já com dissídio de set/2025).",
+    "gestor_id": "colaborador_id do gestor imediato (FK colaboradores; nulo para o gestor máximo da área).",
+    "status": "Ativo ou Desligado."
+   }
+  },
+  "desligamentos": {
+   "comentario": "Desligamentos (turnover) com tipo, motivo, se foi lamentado (regretted) e comentário livre da entrevista de desligamento.",
+   "colunas": {
+    "desligamento_id": "Identificador do desligamento (PK).",
+    "colaborador_id": "Colaborador desligado (FK colaboradores).",
+    "data_desligamento": "Data do desligamento.",
+    "tipo_desligamento": "Voluntário (pedido) ou Involuntário (empresa).",
+    "motivo": "Motivo principal padronizado.",
+    "desligamento_lamentado": "True se a saída foi de alguém que a empresa gostaria de reter (regretted attrition).",
+    "elegivel_recontratacao": "Sim, Não ou Talvez.",
+    "tempo_casa_meses": "Tempo de casa no desligamento (meses).",
+    "custo_rescisao": "Custo estimado da rescisão em R$.",
+    "comentario_entrevista_desligamento": "Texto livre da entrevista de desligamento (só voluntários)."
+   }
+  },
+  "vagas": {
+   "comentario": "Requisições de vagas (recrutamento e seleção): reposição ou aumento de quadro, SLA, canal e contratação.",
+   "colunas": {
+    "vaga_id": "Identificador da vaga (PK).",
+    "area_id": "Área solicitante (FK dim_areas).",
+    "cargo_id": "Cargo da vaga (FK dim_cargos).",
+    "motivo_abertura": "Reposição ou Aumento de quadro.",
+    "data_abertura": "Data de abertura da vaga.",
+    "dias_para_fechar": "Dias entre abertura e fechamento (time to fill); nulo se em andamento.",
+    "canal_contratacao": "Canal de origem do candidato contratado.",
+    "recrutador": "Recrutador(a) responsável.",
+    "qtd_candidatos": "Quantidade de candidatos inscritos.",
+    "salario_ofertado": "Salário ofertado em R$.",
+    "status": "Preenchida, Cancelada ou Em andamento.",
+    "data_fechamento": "Data de fechamento.",
+    "colaborador_contratado_id": "Colaborador contratado (FK colaboradores)."
+   }
+  },
+  "folha_pagamento": {
+   "comentario": "Folha de pagamento mensal por colaborador (jan/2024 a set/2026). Custo total = salário + comissões + horas extras + PLR + benefícios + encargos.",
+   "colunas": {
+    "competencia": "Mês de competência (primeiro dia do mês).",
+    "colaborador_id": "Colaborador (FK colaboradores).",
+    "area_id": "Área no mês (FK dim_areas).",
+    "salario_base": "Salário base do mês (R$).",
+    "comissoes": "Comissões de vendas (R$), somente áreas comerciais.",
+    "horas_extras": "Horas extras pagas (R$).",
+    "plr": "PLR paga no mês (R$) — paga em março.",
+    "beneficios": "Custo de benefícios (VR/VA, saúde, auxílios) em R$.",
+    "encargos": "Encargos (INSS patronal, FGTS etc.) em R$.",
+    "custo_total": "Custo total do colaborador no mês (R$)."
+   }
+  },
+  "absenteismo": {
+   "comentario": "Ausências e afastamentos (atestados, faltas, licenças) com grupo de CID agregado.",
+   "colunas": {
+    "ausencia_id": "Identificador da ausência (PK).",
+    "colaborador_id": "Colaborador (FK colaboradores).",
+    "data_inicio": "Data de início da ausência.",
+    "dias_afastamento": "Dias de afastamento.",
+    "tipo_ausencia": "Tipo da ausência.",
+    "grupo_cid": "Grupo de CID (só atestados/licenças médicas; dado sensível de saúde)."
+   }
+  },
+  "treinamentos": {
+   "comentario": "Matrículas em treinamentos da universidade corporativa, com status e nota.",
+   "colunas": {
+    "matricula_id": "Identificador da matrícula (PK).",
+    "colaborador_id": "Colaborador (FK colaboradores).",
+    "curso_id": "Curso (FK dim_cursos).",
+    "data_inscricao": "Data de inscrição.",
+    "status": "Concluído, Em andamento, Não iniciado ou Vencido.",
+    "nota_final": "Nota final 0-10 (só concluídos).",
+    "avaliacao_curso_1a5": "Avaliação do curso pelo participante (1 a 5)."
+   }
+  },
+  "avaliacoes_desempenho": {
+   "comentario": "Avaliação anual de desempenho e potencial (ciclos 2024 e 2025) com quadrante Nine Box, promoção e mérito.",
+   "colunas": {
+    "ciclo": "Ano do ciclo de avaliação.",
+    "colaborador_id": "Colaborador (FK colaboradores).",
+    "nota_desempenho": "Nota de desempenho (1 a 5).",
+    "nota_potencial": "Nota de potencial (1 a 5).",
+    "quadrante_nine_box": "Quadrante na matriz Nine Box (ex.: Talento, Mantenedor, Insuficiente).",
+    "promovido": "True se foi promovido no ciclo.",
+    "percentual_merito": "Percentual de aumento por mérito concedido."
+   }
+  },
+  "pesquisa_clima": {
+   "comentario": "Respostas ANÔNIMAS da pesquisa de clima/engajamento (semestral) com eNPS, notas por dimensão (1-5) e comentário livre. Não possui colaborador_id.",
+   "colunas": {
+    "resposta_id": "Identificador da resposta (PK).",
+    "ciclo": "Ciclo da pesquisa (ex.: 2025-S2).",
+    "data_resposta": "Data da resposta.",
+    "area_id": "Área do respondente (FK dim_areas).",
+    "unidade_id": "Unidade do respondente (FK dim_unidades).",
+    "faixa_tempo_casa": "Faixa de tempo de casa.",
+    "nivel": "Nível hierárquico do respondente.",
+    "enps_0a10": "Nota eNPS 0-10. Promotores 9-10, neutros 7-8, detratores 0-6. eNPS = %promotores - %detratores.",
+    "nota_lideranca": "Nota 1-5: liderança.",
+    "nota_remuneracao_beneficios": "Nota 1-5: remuneração e benefícios.",
+    "nota_carreira_desenvolvimento": "Nota 1-5: carreira e desenvolvimento.",
+    "nota_ambiente_colaboracao": "Nota 1-5: ambiente e colaboração.",
+    "nota_carga_trabalho_equilibrio": "Nota 1-5: carga de trabalho e equilíbrio vida-trabalho.",
+    "nota_orgulho_proposito": "Nota 1-5: orgulho e propósito.",
+    "nota_comunicacao_interna": "Nota 1-5: comunicação interna.",
+    "comentario": "Comentário livre (opcional)."
+   }
+  }
+ },
+ "pk": {
+  "dim_unidades": "unidade_id",
+  "dim_areas": "area_id",
+  "dim_cargos": "cargo_id",
+  "dim_cursos": "curso_id",
+  "colaboradores": "colaborador_id",
+  "desligamentos": "desligamento_id",
+  "vagas": "vaga_id",
+  "absenteismo": "ausencia_id",
+  "treinamentos": "matricula_id",
+  "pesquisa_clima": "resposta_id"
+ },
+ "fk": [
+  [
+   "colaboradores",
+   "area_id",
+   "dim_areas",
+   "area_id"
+  ],
+  [
+   "colaboradores",
+   "cargo_id",
+   "dim_cargos",
+   "cargo_id"
+  ],
+  [
+   "colaboradores",
+   "unidade_id",
+   "dim_unidades",
+   "unidade_id"
+  ],
+  [
+   "colaboradores",
+   "gestor_id",
+   "colaboradores",
+   "colaborador_id"
+  ],
+  [
+   "dim_cargos",
+   "area_id",
+   "dim_areas",
+   "area_id"
+  ],
+  [
+   "desligamentos",
+   "colaborador_id",
+   "colaboradores",
+   "colaborador_id"
+  ],
+  [
+   "vagas",
+   "area_id",
+   "dim_areas",
+   "area_id"
+  ],
+  [
+   "vagas",
+   "cargo_id",
+   "dim_cargos",
+   "cargo_id"
+  ],
+  [
+   "vagas",
+   "colaborador_contratado_id",
+   "colaboradores",
+   "colaborador_id"
+  ],
+  [
+   "folha_pagamento",
+   "colaborador_id",
+   "colaboradores",
+   "colaborador_id"
+  ],
+  [
+   "folha_pagamento",
+   "area_id",
+   "dim_areas",
+   "area_id"
+  ],
+  [
+   "absenteismo",
+   "colaborador_id",
+   "colaboradores",
+   "colaborador_id"
+  ],
+  [
+   "treinamentos",
+   "colaborador_id",
+   "colaboradores",
+   "colaborador_id"
+  ],
+  [
+   "treinamentos",
+   "curso_id",
+   "dim_cursos",
+   "curso_id"
+  ],
+  [
+   "avaliacoes_desempenho",
+   "colaborador_id",
+   "colaboradores",
+   "colaborador_id"
+  ],
+  [
+   "pesquisa_clima",
+   "area_id",
+   "dim_areas",
+   "area_id"
+  ],
+  [
+   "pesquisa_clima",
+   "unidade_id",
+   "dim_unidades",
+   "unidade_id"
+  ]
+ ]
+}
